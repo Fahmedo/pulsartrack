@@ -145,7 +145,6 @@
         }
       ]
     ],
-    [],
     [
       [
         "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
@@ -177,7 +176,6 @@
         }
       ]
     ],
-    [],
     [
       [
         "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
@@ -196,7 +194,7 @@
                 {
                   "i128": {
                     "hi": 0,
-                    "lo": 110000
+                    "lo": 105500
                   }
                 }
               ]
@@ -218,7 +216,7 @@
                     {
                       "i128": {
                         "hi": 0,
-                        "lo": 110000
+                        "lo": 105500
                       }
                     }
                   ]

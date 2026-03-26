@@ -155,7 +155,7 @@ export function rateLimit() {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    const ip = req.ip || req.connection.remoteAddress || "unknown";
+    const ip = req.ip || "unknown";
 
     try {
       await ipLimiter.consume(ip);
@@ -197,6 +197,7 @@ export function rateLimitWrite() {
       res
         .status(429)
         .json({ error: "Write rate limit exceeded (10 per hour)" });
+      return;
     }
   };
 }

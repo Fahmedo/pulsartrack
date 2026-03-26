@@ -11,6 +11,7 @@ pub struct BudgetAllocation {
     pub total_budget: i128,
     pub daily_budget: i128,
     pub hourly_budget: i128,
+    pub budget_remainder: i128, // Stroops to distribute across first `remainder` hours
     pub spent_today: i128,
     pub spent_total: i128,
     pub optimization_mode: OptimizationMode,
@@ -101,6 +102,7 @@ impl BudgetOptimizerContract {
             total_budget,
             daily_budget,
             hourly_budget: daily_budget / 24,
+            budget_remainder: daily_budget % 24,
             spent_today: 0,
             spent_total: 0,
             optimization_mode,
@@ -153,6 +155,7 @@ impl BudgetOptimizerContract {
 
         allocation.daily_budget = capped_daily;
         allocation.hourly_budget = capped_daily / 24;
+        allocation.budget_remainder = capped_daily % 24;
         allocation.last_optimized = env.ledger().timestamp();
 
         let _ttl_key = DataKey::Allocation(campaign_id);

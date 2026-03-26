@@ -223,6 +223,17 @@
                   "map": [
                     {
                       "key": {
+                        "symbol": "budget_remainder"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 16
+                        }
+                      }
+                    },
+                    {
+                      "key": {
                         "symbol": "campaign_id"
                       },
                       "val": {

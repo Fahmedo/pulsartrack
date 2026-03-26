@@ -210,3 +210,59 @@ fn test_optimization_does_not_break_reset() {
     assert_eq!(alloc.spent_total, 15_000);
     assert_eq!(alloc.last_reset_day, 1);
 }
+
+#[test]
+fn test_hourly_budget_remainder_tracked() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let (c, _, _) = setup(&env);
+    let advertiser = Address::generate(&env);
+
+    // 100 stroops / 24 = 4 per hour, remainder 4
+    c.set_budget_allocation(
+        &advertiser,
+        &1u64,
+        &1_000i128,
+        &100i128,
+        &OptimizationMode::ManualCpc,
+        &500i128,
+        &100u32,
+    );
+    let alloc = c.get_allocation(&1u64).unwrap();
+    assert_eq!(alloc.hourly_budget, 4);         // 100 / 24 = 4
+    assert_eq!(alloc.budget_remainder, 4);       // 100 % 24 = 4
+    // First 4 hours get 5 stroops, remaining 20 hours get 4 = 4*5 + 20*4 = 100
+    assert_eq!(
+        alloc.budget_remainder * (alloc.hourly_budget + 1)
+            + (24 - alloc.budget_remainder) * alloc.hourly_budget,
+        alloc.daily_budget
+    );
+}
+
+#[test]
+fn test_hourly_budget_remainder_after_optimization() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let (c, _, oracle) = setup(&env);
+    let advertiser = Address::generate(&env);
+    c.set_budget_allocation(
+        &advertiser,
+        &1u64,
+        &100_000i128,
+        &10_000i128,
+        &OptimizationMode::ManualCpc,
+        &500i128,
+        &100u32,
+    );
+
+    // Optimize to a value that doesn't divide evenly by 24
+    c.optimize_budget(&oracle, &1u64, &100i128, &soroban_sdk::String::from_str(&env, "test remainder"));
+    let alloc = c.get_allocation(&1u64).unwrap();
+    assert_eq!(alloc.hourly_budget, 4);
+    assert_eq!(alloc.budget_remainder, 4);
+    assert_eq!(
+        alloc.budget_remainder * (alloc.hourly_budget + 1)
+            + (24 - alloc.budget_remainder) * alloc.hourly_budget,
+        alloc.daily_budget
+    );
+}

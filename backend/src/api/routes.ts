@@ -65,6 +65,6 @@ router.use("/account", accountRoutes);
 router.use("/campaigns", campaignRoutes);
 router.use("/publishers", publisherRoutes);
 router.use("/auctions", auctionRoutes);
-router.use("/governance", analyticsRoutes);
+router.use("/governance", governanceRoutes);
 
 export default router;

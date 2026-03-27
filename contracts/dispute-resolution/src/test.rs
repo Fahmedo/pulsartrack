@@ -307,6 +307,45 @@ fn test_resolve_dispute() {
 }
 
 #[test]
+fn test_resolve_dispute_no_action_refunds_filing_fee() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let (client, admin, _, token_addr) = setup(&env);
+
+    let claimant = Address::generate(&env);
+    let respondent = Address::generate(&env);
+    let arbitrator = Address::generate(&env);
+    let token_client = StellarAssetClient::new(&env, &token_addr);
+    mint(&env, &token_addr, &claimant, 1_000_000);
+
+    let initial_claimant_balance = token_client.balance(&claimant);
+    let dispute_id = client.file_dispute(
+        &claimant,
+        &respondent,
+        &1u64,
+        &50_000i128,
+        &make_desc(&env),
+        &make_evidence(&env),
+    );
+
+    client.authorize_arbitrator(&admin, &arbitrator);
+    client.assign_arbitrator(&admin, &dispute_id, &arbitrator);
+    client.resolve_dispute(
+        &arbitrator,
+        &dispute_id,
+        &DisputeOutcome::NoAction,
+        &String::from_str(&env, "no action needed"),
+    );
+
+    let claimant_balance_after = token_client.balance(&claimant);
+    assert_eq!(claimant_balance_after, initial_claimant_balance - 50_000);
+
+    let dispute = client.get_dispute(&dispute_id).unwrap();
+    assert!(matches!(dispute.outcome, DisputeOutcome::NoAction));
+    assert!(matches!(dispute.status, DisputeStatus::Resolved));
+}
+
+#[test]
 #[should_panic(expected = "not assigned arbitrator")]
 fn test_resolve_by_wrong_arbitrator() {
     let env = Env::default();

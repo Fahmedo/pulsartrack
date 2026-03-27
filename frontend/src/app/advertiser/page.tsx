@@ -1,24 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import {
-  PlusCircle,
-  BarChart3,
-  Settings,
-  DollarSign,
-  TrendingUp,
-  Eye,
-  MousePointer,
-} from "lucide-react";
-import { useWalletStore } from "@/store/wallet-store";
-import { WalletConnectButton } from "@/components/wallet/WalletModal";
-import {
-  useCreateCampaign,
-  useCampaignCount,
-  useAdvertiserCampaigns,
-  useAdvertiserStats,
-} from "@/hooks/useContract";
-import { formatXlm, formatNumber } from "@/lib/display-utils";
+import { useState } from 'react';
+import { PlusCircle, BarChart3, Settings, DollarSign, TrendingUp, Eye, MousePointer } from 'lucide-react';
+import { useWalletStore } from '@/store/wallet-store';
+import { WalletConnectButton } from '@/components/wallet/WalletModal';
+import { useCreateCampaign, useCampaignCount, useAdvertiserCampaigns, useAdvertiserStats } from '@/hooks/useContract';
+import { formatXlm, formatNumber } from '@/lib/display-utils';
 
 interface CampaignForm {
   title: string;
@@ -57,9 +44,7 @@ export default function AdvertiserPage() {
     useAdvertiserCampaigns(address as string, Number(campaignCount));
 
   const [form, setForm] = useState<CampaignForm>(EMPTY_FORM);
-  const [activeTab, setActiveTab] = useState<
-    "campaigns" | "create" | "analytics"
-  >("campaigns");
+  const [activeTab, setActiveTab] = useState<'campaigns' | 'create' | 'analytics'>('campaigns');
 
   if (!isConnected) {
     return (
@@ -83,17 +68,13 @@ export default function AdvertiserPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Update to use new campaign parameters
-    // createCampaign({
-    //   campaignType: 1,
-    //   budgetXlm: parseFloat(form.budgetXlm) || 0,
-    //   costPerViewXlm: 0.001,
-    //   durationDays: parseInt(form.durationDays) || 30,
-    //   targetViews: 10000,
-    //   dailyViewLimit: 1000,
-    //   refundable: true,
-    // });
-    console.warn("Campaign creation temporarily disabled - form needs update");
+    createCampaign({
+      title: form.title,
+      budgetXlm: parseFloat(form.budgetXlm) || 0,
+      dailyBudgetXlm: parseFloat(form.dailyBudgetXlm) || 0,
+      durationDays: parseInt(form.durationDays) || 30,
+      contentId: form.contentId,
+    });
   };
 
   return (
@@ -273,6 +254,14 @@ export default function AdvertiserPage() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Show validation errors */}
+                {Object.keys(errors).length > 0 && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    {Object.entries(errors).map(([field, msgs]) =>
+                      msgs?.map((msg, i) => <div key={field + i}>{msg}</div>)
+                    )}
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Campaign Title

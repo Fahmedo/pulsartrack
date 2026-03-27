@@ -2,7 +2,7 @@
 use super::*;
 use soroban_sdk::{
     testutils::{Address as _, Ledger},
-    token::StellarAssetClient,
+    token::{Client as TokenClient, StellarAssetClient},
     Address, Env, String,
 };
 
@@ -315,7 +315,7 @@ fn test_resolve_dispute_no_action_refunds_filing_fee() {
     let claimant = Address::generate(&env);
     let respondent = Address::generate(&env);
     let arbitrator = Address::generate(&env);
-    let token_client = StellarAssetClient::new(&env, &token_addr);
+    let token_client = TokenClient::new(&env, &token_addr);
     mint(&env, &token_addr, &claimant, 1_000_000);
 
     let initial_claimant_balance = token_client.balance(&claimant);

@@ -13,7 +13,7 @@ import { useTxNotifications } from "../hooks/useTxNotifications";
 import { useThemeStore, ThemeMode } from "../store/theme-store";
 
 export function Header() {
-  const { address, isConnected } = useWalletStore();
+  const { address, isConnected, networkMismatch } = useWalletStore();
   const { getPendingTransactions } = useTransactionStore();
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -63,7 +63,7 @@ export function Header() {
 
   return (
     <>
-      {isConnected && useWalletStore.getState().networkMismatch && (
+      {isConnected && networkMismatch && (
         <div className="bg-amber-500 text-white px-4 py-2 text-sm font-medium text-center flex items-center justify-center gap-2">
           <AlertTriangle className="w-4 h-4" />
           <span>

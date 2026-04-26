@@ -330,6 +330,11 @@ export function useSetConsent() {
     expiresInDays?: number;
   }) => {
     if (!address) return;
+
+    const expirationTs = params.expiresInDays
+      ? Math.floor(Date.now() / 1000) + params.expiresInDays * 86400
+      : 0; // 0 = no expiry
+
     mutate({
       contractId: CONTRACT_IDS.PRIVACY_LAYER,
       method: "set_consent",
@@ -340,6 +345,7 @@ export function useSetConsent() {
         boolToScVal(params.targetedAds),
         boolToScVal(params.analytics),
         boolToScVal(params.thirdPartySharing),
+        u64ToScVal(expirationTs),
       ],
     });
   };
